@@ -9,3 +9,24 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Users {
+  id String @id @default(uuid()) @db.Uuid
+
+  clerkUserId String @unique
+
+  sentMessages     Messages[] @relation(name: "sender")
+  receivedMessages Messages[] @relation(name: "receiver")
+}
+
+model Messages {
+  id String @id @default(uuid()) @db.Uuid
+
+  content String @db.Text
+
+  Sender   Users  @relation(name: "sender", fields: [senderId], references: [id])
+  senderId String @db.Uuid
+
+  Receiver   Users  @relation(name: "receiver", fields: [receiverId], references: [id])
+  receiverId String @db.Uuid
+}
