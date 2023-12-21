@@ -11,6 +11,8 @@ import {
   SignedIn,
   SignedOut,
 } from '@clerk/clerk-react';
+import { Provider } from 'react-redux';
+import { store } from './store';
 
 const router = createBrowserRouter([
   {
@@ -36,13 +38,15 @@ const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <ClerkProvider publishableKey={clerkPubKey}>
-      <SignedIn>
-        <RouterProvider router={router} />
-      </SignedIn>
-      <SignedOut>
-        <RedirectToSignIn />
-      </SignedOut>
-    </ClerkProvider>
+    <Provider store={store}>
+      <ClerkProvider publishableKey={clerkPubKey}>
+        <SignedIn>
+          <RouterProvider router={router} />
+        </SignedIn>
+        <SignedOut>
+          <RedirectToSignIn />
+        </SignedOut>
+      </ClerkProvider>
+    </Provider>
   </React.StrictMode>
 );
