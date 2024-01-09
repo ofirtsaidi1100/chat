@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 
 import { UsersService } from './users.service';
 import { FindOrCreateDto } from './dto/find-or-create.dto';
@@ -10,5 +10,10 @@ export class UsersController {
   @Post('find-or-create')
   findOrCreate(@Body() findOrCreateDto: FindOrCreateDto) {
     return this.usersService.findOrCreate(findOrCreateDto);
+  }
+
+  @Get('find-all-other-users')
+  findAllOtherUsers(@Query('id') id: string) {
+    return this.usersService.findAllOtherUsers(id);
   }
 }

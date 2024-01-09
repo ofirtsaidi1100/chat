@@ -14,4 +14,9 @@ export class UsersService {
 
     return user;
   }
+
+  async findAllOtherUsers(id: string) {
+    const users = await this.prisma.users.findMany({ where: { NOT: { id } } });
+    return users;
+  }
 }
