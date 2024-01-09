@@ -9,6 +9,14 @@ const usersApi = serverApi.injectEndpoints({
     >({
       query: (body) => ({ url: 'users/find-or-create', body, method: 'POST' }),
     }),
+
+    findAllOtherUsers: build.query<Users[], string>({
+      query: (id) => ({
+        url: 'users/find-all-other-users',
+        params: { id },
+        method: 'GET',
+      }),
+    }),
   }),
 });
 

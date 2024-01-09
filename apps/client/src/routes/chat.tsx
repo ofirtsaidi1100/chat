@@ -1,3 +1,9 @@
+import { Contacts } from '../features/contacts';
+
 export const Chat = () => {
-  return <div>Chat Route</div>;
+  return (
+    <div className="flex">
+      <Contacts />
+    </div>
+  );
 };
