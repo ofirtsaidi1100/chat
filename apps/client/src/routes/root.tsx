@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import { Navbar } from '../features/navbar';
 import { useUser } from '@clerk/clerk-react';
 import { useFindOrCreateUserMutation } from '../store';
+import { useEffect } from 'react';
 
 export const Root = () => {
   const { user } = useUser();
@@ -10,11 +11,11 @@ export const Root = () => {
     throw new Error('You need to log in');
   }
 
-  const [findOrCreate, result] = useFindOrCreateUserMutation();
+  const [findOrCreate] = useFindOrCreateUserMutation();
 
-  findOrCreate({ clerkUserId: user.id });
-
-  console.log(result.data);
+  useEffect(() => {
+    findOrCreate({ clerkUserId: user.id });
+  }, [findOrCreate, user.id]);
 
   return (
     <div className="w-full h-full flex">
