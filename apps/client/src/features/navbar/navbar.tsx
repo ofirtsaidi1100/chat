@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 export const Navbar = () => {
   return (
-    <div className="flex">
+    <aside className="flex">
       <div className="flex flex-col items-center justify-evenly w-24 h-full border-r">
         <Link className="w-1/2" to="home">
           <HomeIcon />
@@ -15,6 +15,6 @@ export const Navbar = () => {
         </Link>
         <UserButton />
       </div>
-    </div>
+    </aside>
   );
 };
