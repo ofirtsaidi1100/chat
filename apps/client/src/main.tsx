@@ -13,6 +13,7 @@ import {
 } from '@clerk/clerk-react';
 import { Provider } from 'react-redux';
 import { store } from './store';
+import { UserChat } from './routes/user-chat';
 
 const router = createBrowserRouter([
   {
@@ -22,6 +23,7 @@ const router = createBrowserRouter([
       {
         path: '/chat',
         element: <Chat />,
+        children: [{ path: '/chat/:userId', element: <UserChat /> }],
       },
       {
         path: '/home',
