@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { FindOrCreateDto } from './dto/find-or-create.dto';
+import clerkClient from '@clerk/clerk-sdk-node';
 
 @Injectable()
 export class UsersService {
@@ -16,7 +17,18 @@ export class UsersService {
   }
 
   async findAllOtherUsers(id: string) {
+    if (id === '') {
+      return [];
+    }
+
     const users = await this.prisma.users.findMany({ where: { NOT: { id } } });
-    return users;
+
+    const clerkUsers = await Promise.all(
+      users.map((user) => {
+        return clerkClient.users.getUser(user.clerkUserId);
+      })
+    );
+
+    return clerkUsers;
   }
 }

@@ -1,5 +1,6 @@
 import { Prisma, Users } from '@prisma/client';
 import { serverApi } from './server.api';
+import { User } from '@clerk/clerk-sdk-node';
 
 const usersApi = serverApi.injectEndpoints({
   endpoints: (build) => ({
@@ -10,7 +11,7 @@ const usersApi = serverApi.injectEndpoints({
       query: (body) => ({ url: 'users/find-or-create', body, method: 'POST' }),
     }),
 
-    findAllOtherUsers: build.query<Users[], string>({
+    findAllOtherUsers: build.query<User[], string | undefined>({
       query: (id) => ({
         url: 'users/find-all-other-users',
         params: { id },
@@ -20,4 +21,5 @@ const usersApi = serverApi.injectEndpoints({
   }),
 });
 
-export const { useFindOrCreateUserMutation } = usersApi;
+export const { useFindOrCreateUserMutation, useFindAllOtherUsersQuery } =
+  usersApi;
