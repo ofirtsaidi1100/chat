@@ -31,4 +31,21 @@ export class UsersService {
 
     return clerkUsers;
   }
+
+  
+  async findUserById(clerkUserId: string) {
+    if (!clerkUserId) {
+      return null;
+    }
+
+    const user = await this.prisma.users.findUnique({
+      where: { clerkUserId },
+    });
+    
+    if (!user) {
+      return null; // Handle the case where the user is not found
+    }
+
+    return clerkClient.users.getUser(user.clerkUserId);
+  }
 }

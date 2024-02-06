@@ -16,4 +16,9 @@ export class UsersController {
   findAllOtherUsers(@Query('id') id: string) {
     return this.usersService.findAllOtherUsers(id);
   }
+
+  @Get('find-user-by-id')
+  finduserByID(@Query('id') id: string) {
+    return this.usersService.findUserById(id);
+  }
 }

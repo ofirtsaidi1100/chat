@@ -18,8 +18,15 @@ const usersApi = serverApi.injectEndpoints({
         method: 'GET',
       }),
     }),
+    findUserById: build.query<User, string | undefined>({
+      query: (id) => ({
+        url: 'users/find-user-by-id',
+        params: { id },
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
-export const { useFindOrCreateUserMutation, useFindAllOtherUsersQuery } =
+export const { useFindOrCreateUserMutation, useFindAllOtherUsersQuery, useFindUserByIdQuery } =
   usersApi;
