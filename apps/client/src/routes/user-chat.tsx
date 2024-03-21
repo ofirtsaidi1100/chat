@@ -102,6 +102,9 @@ export const UserChat: React.FC = () => {
                 receiverId: contact.id,
                 senderId: loggedInUser?.id,
               });
+              if (textareaRef.current) {
+                textareaRef.current.value = '';
+              }
             }}
           >
             <Send className="h-6 w-6" />
