@@ -1,12 +1,40 @@
 import { useParams } from 'react-router-dom';
-import { useFindUserByIdQuery } from '../store';
+import {
+  useFindOrCreateUserMutation,
+  useFindUserByIdQuery,
+  useLazyGetMessagesQuery,
+  useSendMessageMutation,
+} from '../store';
 import { Send } from 'lucide-react';
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export const UserChat: React.FC = () => {
-  const { userId } = useParams();
-  const { data: user } = useFindUserByIdQuery(userId ?? '');
+  const { userId: contactClerkId } = useParams();
+  const { data: contactClerk } = useFindUserByIdQuery(contactClerkId ?? '');
+  const [_, { data: loggedInUser }] = useFindOrCreateUserMutation({
+    fixedCacheKey: 'logged-in-user',
+  });
+  const [findContact, { data: contact }] = useFindOrCreateUserMutation({
+    fixedCacheKey: 'contact',
+  });
+
   const textareaRef = useRef<HTMLTextAreaElement>(null); // Reference for textarea element
+  const [message, setMessage] = useState('');
+  const [sendMessage] = useSendMessageMutation();
+  const [trigger, { data: messages, isLoading }] = useLazyGetMessagesQuery();
+
+  useEffect(() => {
+    if (contact && loggedInUser) {
+      trigger({
+        senderId: loggedInUser.id ?? '',
+        receiverId: contact.id ?? '',
+      });
+    }
+  }, [contact, loggedInUser, trigger]);
+
+  useEffect(() => {
+    findContact({ clerkUserId: contactClerkId ?? '' });
+  }, [contactClerkId, findContact]);
 
   // Function to adjust textarea height based on content
   const adjustTextareaHeight = () => {
@@ -28,31 +56,54 @@ export const UserChat: React.FC = () => {
   const handleTextareaChange = (
     event: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
+    setMessage(event.target.value);
     adjustTextareaHeight(); // Adjust textarea height on change
   };
 
   return (
     <div className="w-full h-full flex gap-4 justify-start items-center flex-col">
-      {user ? (
+      {contactClerk ? (
         <div className="h-fit w-full flex justify-start items-center gap-4 border-b p-4">
           <img
             className="aspect-square rounded-full h-10"
-            src={user.imageUrl}
+            src={contactClerk.imageUrl}
             alt="Profile Pic"
           />
-          <div>{`${user.firstName} ${user.lastName}`}</div>
+          <div>{`${contactClerk.firstName} ${contactClerk.lastName}`}</div>
         </div>
       ) : (
-        <p>User not found</p>
+        <p>Contact not found</p>
       )}
       <div className="w-full h-full flex flex-col justify-end items-center p-4">
+        <div>
+          {isLoading ? (
+            <div>Loading...</div>
+          ) : (
+            messages?.map((message) => (
+              <div key={message.id}>{message.content}</div>
+            ))
+          )}
+        </div>
         <div className="p-4 w-full h-fit flex gap-4">
           <textarea
             ref={textareaRef} // Assign the ref to the textarea element
             className="border py-2 px-4 rounded-3xl w-full resize-none overflow-auto"
             onChange={handleTextareaChange} // Call handleTextareaChange on change
           />
-          <button className="rounded-full bg-blue-400 w-fit h-fit p-3 flex justify-center items-center mt-auto [&_*]:stroke-white">
+          <button
+            className="rounded-full bg-blue-400 w-fit h-fit p-3 flex justify-center items-center mt-auto [&_*]:stroke-white"
+            onClick={() => {
+              if (!contact || !loggedInUser) {
+                // TODO: show toast
+                return;
+              }
+              sendMessage({
+                content: message,
+                receiverId: contact.id,
+                senderId: loggedInUser?.id,
+              });
+            }}
+          >
             <Send className="h-6 w-6" />
           </button>
         </div>
