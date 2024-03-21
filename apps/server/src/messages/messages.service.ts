@@ -7,7 +7,13 @@ export class MessagesService {
   constructor(private prisma: PrismaService) {}
   async getMessages(params: { senderId: string; receiverId: string }) {
     const messages = await this.prisma.messages.findMany({
-      where: { ...params },
+      //   where: { ...params },
+      where: {
+        OR: [
+          { senderId: params.receiverId, receiverId: params.senderId },
+          params,
+        ],
+      },
     });
 
     return messages;
